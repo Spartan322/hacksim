@@ -83,6 +83,8 @@ var scripts = getScriptsForDir(args['scripts']);
 if (!scripts)
 	scripts = getScriptsForDir('scripts');
 
+console.log("\n\nConsole Output Below:\n");
+
 for (var s in scripts)
 	for (var ss in scripts[s]) {
 		if (!context.__scripts[s])
