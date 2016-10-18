@@ -12,7 +12,7 @@ This is really barebones and could use some fixing up, this started as a quick a
 node commandline.js scriptName="<location of script>" arguments="<arguments to hand into the script>"
 ```
 Hacksim will take care of the rest.
-**NOTE: you must escape quotations for now**
+**NOTE: you must escape quotations for now, this is a quirk of the default commandline, if anyone feels like fixing the commandline, please do so.**
 
 If you feel like using this system as a normal node module instead, simply do require('hacksim'), documentation on this coming shortly.
 
