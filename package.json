@@ -1,0 +1,11 @@
+{
+	"name":"hacksim",
+	"version":"0.1.0",
+	"description":"Simulation VM for Hackmud development",
+	"dependencies": {
+		"mongo-sync":"2.0.1"
+	},
+	"main": "./main.js",
+	"license": "./LICENSE",
+	"repository":"https://github.com/Spartan322/hacksim"
+}
