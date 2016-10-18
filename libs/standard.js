@@ -6,7 +6,7 @@ var standard = {
 				is_arr: function (obj) {
 					return obj !== undefined && Array.isArray(obj);
 				},
-				 get_log: function () {
+				get_log: function () {
 					return logmsgs;
 				},
 				log: function (lmsg) {
