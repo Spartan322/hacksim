@@ -8,17 +8,21 @@ function (context, args) {
 			\nUsage: s322.chat {channelName:\"msg to send\", \"@userName\":\"msg to user\""
 		}
 	}
-	
-    var chans = [],
-    msgs = [],
-    response = {ok:true, msg:"Empty Parameters"};
-    for (var arr = Object.keys(args), i = 0; i < arr.length; i++) {
-        if (args.hasOwnProperty(arr[i]) && args[arr[i]]) {
+
+	var l = #s.scripts.lib();
+	var v = l.to_gc_num(1);
+	l.log(v);
+
+	var chans = [],
+	msgs = [],
+	response = {ok:true, msg:"Empty Parameters"};
+	for (var arr = Object.keys(args), i = 0; i < arr.length; i++) {
+		if (args.hasOwnProperty(arr[i]) && args[arr[i]]) {
 			if (arr[i].charAt(0) == "@") {
-				response = #s.chats.tell({to:arr[i].substring(1), msg:args[arr[i]]});
+				response = #s.chats.tell({to:arr[i].substring(1), msg:args[arr[i]]+' '+v});
 			} else
 				response = #s.chats.send({channel:arr[i], msg:args[arr[i]]});
-        }
-    }
-    return response;
+		}
+	}
+	return response;
 }

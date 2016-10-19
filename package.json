@@ -3,7 +3,9 @@
 	"version":"0.1.0",
 	"description":"Simulation VM for Hackmud development",
 	"dependencies": {
-		"mongo-sync":"2.0.1"
+		"mongo-sync":"2.0.1",
+		"clone": "2.0.0",
+		"merge": "1.2.0"
 	},
 	"main": "./main.js",
 	"license": "./LICENSE",

@@ -3,11 +3,12 @@ var fs = require("fs");
 var path = require("path");
 
 var standard = require("./libs/std_scripts.js");
+var standardScripts = require("./libs/standard.js");
 
 var hacksim = {
 	objects: {
 		context: {
-			__standard: require("./libs/standard.js"),
+			__standard: standardScripts.scripts,
 			__db: require("./libs/database.js"),
 			__scripts: standard.scripts,
 		},
@@ -26,13 +27,15 @@ var hacksim = {
 	preprocessCode: function (code) {
 		if (typeof code !== "string") return undefined;
 		var secLevel = hacksim.getCodeSecLevel(code);
-		var code = "/*\"use strict\";*/(function(){return ("+code+")})();";
+		if (code.search(/((__standard)|(__scripts)|(__db))/g) !== -1)
+			console.log("WARNING: Breaking the sandbox in hackmud is currently forbidden, it seems you may be attempting to break the hacksim sandbox, these hacks are not contained in hackmud, this script may fail in hackmud")
+		code = "/*\"use strict\";*/(function(){return ("+code+")})();";
 		code = code.replace(new RegExp("#s\.scripts", 'g'), "__standard");
 		code = code.replace(/#s\.([^\.\s\(\{]+)\.([^\.\s\(\{]+)/g, "__scripts.$1.$2");
 		code = code.replace(new RegExp("#[^a-zA-Z0-9\.]*", 'g'), "");
 		if(code.search("this") !== -1)
-			console.log("Warning: Hackmud does not like the use of 'this', even if not used as a keyword, this might not work in game, try hacking around it like 'th'+'is'");
-		return {code, secLevel: secLevel};
+			console.log("WARNING: Hackmud may not accept the use of 'this', even if not used as a keyword, this script might not work in game");
+		return {code: code, secLevel: secLevel, success: true};
 	},
 	getScriptSecLevel: function (scriptName) {
 		if (typeof scriptName !== "string")
@@ -45,6 +48,14 @@ var hacksim = {
 		if (!hacksim.objects.scriptLevels[scriptName[0]] || hacksim.objects.scriptLevels[scriptName[0]][scriptName[1]])
 			return undefined;
 		return hacksim.objects.scriptLevels[scriptName[0]][scriptName[1]];
+	},
+	getScriptSecInt: function(scriptName) {
+		var level = hacksim.getScriptSecLevel(args.name);
+		if (level === undefined)
+			return {ok:false, msg:"Script doesn't exist"};
+		var result = hacksim.objects.secLevels.indexOf(level);
+		if (result === -1) return 4;
+		return result;
 	},
 	isSecHigher: function(sec, secondSec) {
 		if (sec === undefined) return true;
@@ -60,8 +71,7 @@ var hacksim = {
 	getCodeSecLevel: function (code) {
 		if (typeof code !== "string")
 			return undefined;
-		var lowestResult = 'fullsec';
-		var scriptor, regex = /#s\.([^\.\s\(\{]+)\.([^\.\s\(\{]+)/g;
+		var lowestResult = 'fullsec', scriptor, regex = /#s\.([^\.\s\(\{]+)\.([^\.\s\(\{]+)/g;
 		while ((scriptor = code.match(regex))) {
 			var result = hacksim.getScriptSecLevel(scriptor)
 			if (hacksim.isSecHigher(lowestResult, result))
@@ -81,6 +91,10 @@ var hacksim = {
 			result = fs.readFileSync(file);*/
 		if (result) {
 			var resultingPreprocess = hacksim.preprocessCode(result.toString());
+			if (!resultingPreprocess.success) {
+				result = undefined;
+				console.log('\n'+resultingPreprocess.msg);
+			}
 			result = {code: resultingPreprocess.code, secLevel: resultingPreprocess.secLevel, file: file};
 		}
 		return result ? result : undefined;
@@ -128,7 +142,7 @@ var hacksim = {
 						}
 					}
 					args[a] = obj;
-				} else console.log("Warning: Failed to find scriptor '"+original+"', any reference of it shall fail");
+				} else console.log("WARNING: Failed to find scriptor '"+original+"', any reference of it shall fail");
 			}
 		}
 		return args;
@@ -168,6 +182,10 @@ var hacksim = {
 		return sandbox(contextObject, (argStr ? hacksim.handleArguments(JSON.parse(argStr)): undefined));
 	}
 };
+standardScripts.__getScriptLevel = hacksim.getScriptSecInt;
+standardScripts.__getSecNames = function () {
+	return hacksim.objects.secLevels.map(function(v) { return v.toUpperCase() });
+}
 
 module.exports = exports = hacksim;
 
